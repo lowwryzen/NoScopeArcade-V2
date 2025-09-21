@@ -13,7 +13,7 @@ void movesetMouse(Camera3D *mouse){
     Vector2 camera_position;
 
     if (IsKeyPressed(KEY_TAB)){
-        if (status == IN_SCREEN){
+        if (status == LOCK){
             status = OUT_SCREEN;
         }
         else if (status == OUT_SCREEN || SUSPEND){
@@ -54,8 +54,8 @@ void movesetMouse(Camera3D *mouse){
 
         mouse->target = (Vector3){
             .x = (mouse->target.x + camera_position.x),
-            .y = (mouse->target.y - camera_position.y),
-            .z = (mouse->target.z - (dislocation.z))
+            .y = (mouse->target.y + camera_position.y),
+            .z = (mouse->target.z + (camera_position.x + camera_position.y))
         };
 
         break;
@@ -80,5 +80,10 @@ void movesetPlayer(Camera3D *camera){
 
     if (IsKeyDown(KEY_D)){
         camera->position.z += 0.1f;
+    }
+
+
+    if (IsKeyPressed(KEY_SPACE)){
+        // Jump system
     }
 }
