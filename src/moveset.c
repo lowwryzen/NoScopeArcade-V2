@@ -1,22 +1,18 @@
 #include <math.h>
 
 #include "raylib.h"
+
 #include "moveset.h"
 #include "vector.h"
 
 void movesetMouse(Camera3D *mouse){
     static unsigned char status = SUSPEND;
 
-    float sensix;
-    float sensiy;
-
-    Vector2 camera_position;
-
     if (IsKeyPressed(KEY_TAB)){
         if (status == LOCK){
             status = OUT_SCREEN;
         }
-        else if (status == OUT_SCREEN || SUSPEND){
+        else if (status == SUSPEND){
             status = IN_SCREEN;
         }
     }
@@ -35,29 +31,7 @@ void movesetMouse(Camera3D *mouse){
         break;
 
     case LOCK:
-        camera_position = GetMouseDelta();
-
-        Vector2 camera_rad = {
-            (camera_position.x) * PI / 180.0f,
-            (camera_position.y) * PI / 180.0f
-        };
-
-        Vector3 dislocation = {
-            .x = cosf(camera_rad.x) * sinf(camera_rad.y),
-            .y = sinf(camera_rad.x),
-            .z = cosf(camera_rad.x) * cosf(camera_rad.y)
-        };
-
-        //sensix = camera_position.x * PI / 180.0f;
-        //sensiy = camera_position.y * PI / 180.0f;
-
-
-        mouse->target = (Vector3){
-            .x = (mouse->target.x + camera_position.x),
-            .y = (mouse->target.y + camera_position.y),
-            .z = (mouse->target.z + (camera_position.x + camera_position.y))
-        };
-
+        movesetCamera(mouse);
         break;
 
     case SUSPEND:
@@ -86,4 +60,27 @@ void movesetPlayer(Camera3D *camera){
     if (IsKeyPressed(KEY_SPACE)){
         // Jump system
     }
+}
+
+void movesetCamera(Camera3D *camera){
+    Vector2 mouse_delta = GetMouseDelta();
+
+    static float yaw = 0.0f;
+    static float pitch = 0.0f;
+
+    yaw += mouse_delta.x * 0.1f;
+    pitch -= mouse_delta.y * 0.1f;
+
+    if (pitch > 89.0f){pitch = 89.0f;}
+    if (pitch < -89.0f){pitch = -89.0f;}
+
+    Vector3 dislocation = {
+        .x = cos(toradians(yaw)) * cos(toradians(pitch)),
+        .y = sin(toradians(pitch)),
+        .z = sin(toradians(yaw)) * cos(toradians(pitch))
+    };
+
+    camera->target = Vector3Sum(camera->position, _Vector3Normalize(dislocation));
+
+    return;
 }

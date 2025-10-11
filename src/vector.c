@@ -1,11 +1,30 @@
-#include "vector.h"
+#include <math.h>
+#include "raylib.h"
 
-Vector3 AddVector3(Vector3 *first, Vector3 *second){
-    Vector3 result = {0};
-    
-    result.x = first->x + second->x;
-    result.y = first->y + second->y;
-    result.z = first->z + second->z;
+Vector3 _Vector3Normalize(Vector3 vector){
+    Vector3 result = {0.0f, 0.0f, 0.0f};
+
+    double vector_module = sqrt(
+        (vector.x * vector.x) +
+        (vector.y * vector.y) +
+        (vector.z * vector.z)
+    );
+
+    if (vector_module > 0.0f){
+        result.x = vector.x / vector_module;
+        result.y = vector.y / vector_module;
+        result.z = vector.z / vector_module;
+    }
+
+    return result;
+}
+
+Vector3 Vector3Sum(Vector3 vector1, Vector3 vector2){
+    Vector3 result = {
+        .x = vector1.x + vector2.x,
+        .y = vector1.y + vector2.y,
+        .z = vector1.z + vector2.z
+    };
 
     return result;
 }

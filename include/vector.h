@@ -3,6 +3,7 @@
 
 #include "raylib.h"
 
-Vector3 AddVector3(Vector3 *first, Vector3 *second);
+Vector3 _Vector3Normalize(Vector3 vector);
+Vector3 Vector3Sum(Vector3 vector1, Vector3 vector2);
 
 #endif

@@ -3,6 +3,8 @@
 
 #include "raylib.h"
 
+#define toradians(x) (x * (PI/180.0f))
+
 typedef enum{
     OUT_SCREEN = 0,
     IN_SCREEN  = 1,
@@ -12,5 +14,7 @@ typedef enum{
 
 void movesetMouse(Camera3D *mouse);
 void movesetPlayer(Camera3D *camera);
+
+void movesetCamera(Camera3D *camera);
 
 #endif
