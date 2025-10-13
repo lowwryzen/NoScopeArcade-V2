@@ -5,6 +5,14 @@
 #include "moveset.h"
 #include "vector.h"
 
+static float yaw = 0.0f;
+static float pitch = 0.0f;
+
+static Vector3 dislocation = {0};
+
+float player_speed = 0.1f;
+float sensi = 0.1f;
+
 void movesetMouse(Camera3D *mouse){
     static unsigned char status = SUSPEND;
 
@@ -40,20 +48,25 @@ void movesetMouse(Camera3D *mouse){
 }
 
 void movesetPlayer(Camera3D *camera){
+
     if (IsKeyDown(KEY_W)){
-        camera->position.x += 0.1f;
+        camera->position = Vector3Sum(camera->position, (Vector3){(dislocation.x * player_speed), 0.0f, (dislocation.z * player_speed)});
     }
     
     if (IsKeyDown(KEY_S)){
-        camera->position.x -= 0.1f;
+        camera->position = _Vector3Subtract(camera->position, (Vector3){(dislocation.x * player_speed), 0.0f, (dislocation.z * player_speed)});
     }
 
     if (IsKeyDown(KEY_A)){
-        camera->position.z -= 0.1f;
+        Vector3 side_vector = _Vector3Normalize(Vector3Cross(dislocation, camera->up));
+
+        camera->position = _Vector3Subtract(camera->position, (Vector3){(side_vector.x * player_speed), (side_vector.y * player_speed), (side_vector.z * player_speed)});
     }
 
     if (IsKeyDown(KEY_D)){
-        camera->position.z += 0.1f;
+        Vector3 side_vector = _Vector3Normalize(Vector3Cross(dislocation, camera->up));
+
+        camera->position = Vector3Sum(camera->position, (Vector3){(side_vector.x * player_speed), (side_vector.y * player_speed), (side_vector.z * player_speed)});
     }
 
 
@@ -65,20 +78,15 @@ void movesetPlayer(Camera3D *camera){
 void movesetCamera(Camera3D *camera){
     Vector2 mouse_delta = GetMouseDelta();
 
-    static float yaw = 0.0f;
-    static float pitch = 0.0f;
-
-    yaw += mouse_delta.x * 0.1f;
-    pitch -= mouse_delta.y * 0.1f;
+    yaw += mouse_delta.x * sensi;
+    pitch -= mouse_delta.y * sensi ;
 
     if (pitch > 89.0f){pitch = 89.0f;}
     if (pitch < -89.0f){pitch = -89.0f;}
 
-    Vector3 dislocation = {
-        .x = cos(toradians(yaw)) * cos(toradians(pitch)),
-        .y = sin(toradians(pitch)),
-        .z = sin(toradians(yaw)) * cos(toradians(pitch))
-    };
+    dislocation.x = cos(toradians(yaw)) * cos(toradians(pitch));
+    dislocation.y = sin(toradians(pitch));
+    dislocation.z = sin(toradians(yaw)) * cos(toradians(pitch));
 
     camera->target = Vector3Sum(camera->position, _Vector3Normalize(dislocation));
 
