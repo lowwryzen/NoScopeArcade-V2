@@ -13,8 +13,10 @@ typedef enum{
 } Screen_Status;
 
 void movesetMouse(Camera3D *mouse);
-void movesetPlayer(Camera3D *camera);
-
 void movesetCamera(Camera3D *camera);
+void movesetPlayer(Camera3D *camera, Entity *player);
 
+void UpdatePos(Camera3D *cam, Entity *player, Object *all_objects, int count);
+
+void EnableJump(Entity *player);
 #endif

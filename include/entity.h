@@ -2,15 +2,18 @@
 #define ENTITY_H
 
 #include "raylib.h"
+#include "object.h"
 
 typedef struct {
-    Model model;
-    Texture2D texture;
+    Object body;
+    Vector3 pos;
     
-    Vector3 spawnpos;
-    Vector3 vel;
-
     int HP;
+    float vel;
+
+    bool onGround;
+    bool isAlive;
+    
 } Entity;
 
 #endif
