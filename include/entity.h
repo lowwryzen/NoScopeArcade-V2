@@ -7,6 +7,7 @@
 typedef struct {
     Object body;
     Vector3 pos;
+    Vector3 lastpos;
     
     int HP;
     float vel;

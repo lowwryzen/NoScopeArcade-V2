@@ -6,4 +6,4 @@ LIB     = lib -lraylib -lwinmm -lgdi32 -luser32
 EXEC    = ./main
 
 init:
-	$(CC) $(CFILES) -o $(OUTPUT) -I $(INCLUDE) -L $(LIB)
+	$(CC) $(CFILES) -o $(OUTPUT) -I $(INCLUDE) -L $(LIB) && main

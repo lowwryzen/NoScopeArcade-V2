@@ -7,6 +7,7 @@
 #include "object.h"
 #include "entity.h"
 #include "moveset.h"
+#include "stdio.h"
 
 static float yaw = 0.0f;
 static float pitch = 0.0f;
@@ -107,34 +108,52 @@ void movesetPlayer(Camera3D *camera, Entity *player){
     }
 }
 
-void UpdatePos(Camera3D *cam, Entity *player, Object *all_objects, int len_obj){
-    for (int i=0; i < len_obj; i++){   
-        bool collision = CheckCollision(player->body, all_objects[i]);
-        player->onGround = CheckGroundCollision(player->body, all_objects[i]);
+void UpdatePos(Camera3D *cam, Entity *player, Object *object){
+    bool collision = CheckCollision(&player->body, object);
+    Two_Sides result = aabbCollision(&player->body, object);
+    
+    if (CheckPlayerCollision(&player->body, object) && result.sides_1.min.y == result.sides_2.max.y + 0.001f){
+        player->onGround = 1;
+        player->pos.y = player->pos.y + (result.sides_2.max.y - result.sides_1.min.y) + 0.001f;
 
-        if (!collision) {
-            player->body.position = player->pos;
-            cam->position = player->pos;
-        }
-        else {
-            player->pos = cam->position;
-        }
-        
-        EnableGravity(player, GRAVITY);
-        EnableJump(player);
+        player->body.position = player->pos;
+        cam->position = player->pos;
     }
+    
+    else if (!collision) {
+        player->body.position = player->pos; 
+        cam->position = player->pos;
+    }
+
+    else {
+        if (CheckGroundCollision(&player->body, object)){
+            player->onGround = 1;
+            player->pos.y = player->pos.y + (result.sides_2.max.y - result.sides_1.min.y) + 0.001f;
+        }
+        player->pos = (Vector3){player->lastpos.x, player->pos.y, player->lastpos.z};
+
+
+        player->body.position = player->pos;
+        cam->position = player->pos;
+       //player->pos.z = player->lastpos.z;
+    }
+
+    printf("player %f, B %f, obj %f\n", player->pos.y, aabbCollision(&player->body, object).sides_1.min.y, aabbCollision(&player->body, object).sides_2.max.y);
+    //printf("%i", player->onGround);
+
+    EnableJump(player);
 }
 
 void EnableJump(Entity *player){
     static double accel = 0.0f;
 
     if (IsKeyPressed(KEY_SPACE) && player->onGround){
-            player->onGround = 0;
-            accel = 0.2f;
+        player->onGround = 0;
+        accel = 0.15f;
     }
 
-    if (!player->onGround){
+    if (!player->onGround)
         player->pos.y += accel;
-    }
+        
     else accel = 0.0f;
 }

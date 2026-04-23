@@ -9,7 +9,7 @@ bool collision = 0;
 
 Camera3D cam = {
     .fovy=45.0f,
-    .position=   (Vector3){1.0f,10.0f,1.0f},
+    .position=   (Vector3){1.0f,10.0f,0.0f},
     .target=     (Vector3){0.0f,0.0f,0.0f},
     .up=         (Vector3){0.0f,1.0f,0.0f},
     .projection= CAMERA_PERSPECTIVE,
@@ -28,17 +28,17 @@ int main(){
     };
     
     Object cube = {
-        .model    =    LoadModel("./assets/models/cube.obj"),
+        .model    =    LoadModel("./assets/models/cube3.obj"),
         .texture  =    LoadTexture("./assets/textures/texture.png"),
-        .position =    (Vector3){2.0f, 0.0f, 0.0f},
+        .position =    (Vector3){-15.0f, 1.0f, -27.0f},
         .boundingbox = GetModelBoundingBox(cube.model),
         .scale    =    1.0f
     };
     
     Object cube2 = {
-        .model    =     cube.model,
-        .texture  =     cube.texture,
-        .position =     (Vector3){0.0f, -2.0f, 0.0f},
+        .model    =     LoadModel("./assets/models/cube.obj"),
+        .texture  =     LoadTexture("./assets/textures/texture.png"),
+        .position =     (Vector3){1.0f, 1.0f, 1.0f},
         .boundingbox =  GetModelBoundingBox(cube2.model),
         .scale    =     2.0f
     };
@@ -46,7 +46,7 @@ int main(){
     Object ground = {
         .model    =     LoadModel("./assets/models/chao_xadrez.obj"),
         .texture  =     LoadTexture("./assets/textures/ground.jpg"),
-        .position =     (Vector3){0.0f, -2.0f, 0.0f},
+        .position =     (Vector3){0.0f, 1.0f, 0.0f},
         .boundingbox =  GetModelBoundingBox(ground.model),
         .scale    =     1.0f
     };
@@ -57,37 +57,58 @@ int main(){
         .vel  = 0.1f,
         .HP   = 100
     };
-    
-    Object collidable_obj[] = {cube, cube2, ground};
+
+    Object collidable_obj[] = {cube2, cube , ground};
 
     while(!WindowShouldClose()){
+        player.lastpos = player.pos;
+
         BeginDrawing();
         
         ClearBackground(WHITE);
         
+        movesetPlayer(&cam, &player);
+
+        //for (int i=0; i < sizeof(collidable_obj)/sizeof(Object); i++){
+        //    UpdatePos(&cam, &player, &collidable_obj[i]);
+        //}
+        player.onGround = 0;
+        UpdatePos(&cam, &player, &ground);
+        UpdatePos(&cam, &player, &cube2);
+        UpdatePos(&cam, &player, &cube);
+
+        
+        EnableGravity(&player, GRAVITY);
+
+        //UpdatePos(&cam, &player, collidable_obj[1]);
+
+        movesetMouse(&cam);
+        
             BeginMode3D(cam);
-                Vector3 lastpos = player.pos;
-                
-                movesetPlayer(&cam, &player);
-                UpdatePos(&cam, &player, collidable_obj, sizeof(collidable_obj)/sizeof(Object));
-                movesetMouse(&cam);
-                
+
                 InitObject(&cube);
                 InitObject(&cube2);
                 InitObject(&ground);
-
-                DrawGrid(10, 1.0f);
-        
+                
             EndMode3D();
-            
+
             DrawText(TextFormat("x pos: %0.2f", cam.position.x), 0,0,30,BLACK);
             DrawText(TextFormat("y pos: %0.2f", cam.position.y), 0,30,30,BLACK);
             DrawText(TextFormat("z pos: %0.2f", cam.position.z), 0,60,30,BLACK);
+
+            DrawText(TextFormat("x pos p: %0.2f", player.pos.x), 200,0,30,BLACK);
+            DrawText(TextFormat("y pos p: %0.2f", player.pos.y), 200,30,30,BLACK);
+            DrawText(TextFormat("z pos p: %0.2f", player.pos.z), 200,60,30,BLACK);
+
+            DrawText(TextFormat("x pos b: %0.2f", player.body.position.x), 400,0,30,BLACK);
+            DrawText(TextFormat("y pos b: %0.2f", player.body.position.y), 400,30,30,BLACK);
+            DrawText(TextFormat("z pos b: %0.2f", player.body.position.z), 440,60,30,BLACK);
         
         EndDrawing();
     }
     
     DelObject(&cube);
+    DelObject(&cube2);
     DelObject(&ground);
 
     CloseWindow();

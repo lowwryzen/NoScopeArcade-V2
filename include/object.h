@@ -21,9 +21,12 @@ typedef struct {
 void InitObject(Object *object);
 void DelObject(Object *object);
 
-Two_Sides aabbCollision(Object object1, Object object2);
+Two_Sides aabbCollision(Object *object1, Object *object2);
 
-bool CheckCollision(Object object1, Object object2);
-bool CheckGroundCollision(Object object1, Object object2);
+bool CheckCollision(Object *object1, Object *object2);
+bool CheckSideCollision(Object *object1, Object *object2);
+bool CheckGroundCollision(Object *object1, Object *object2);
+
+bool CheckPlayerCollision(Object *object1, Object *object2);
 
 #endif
