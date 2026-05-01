@@ -1,6 +1,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include <math.h>
 #include "raylib.h"
 
 typedef struct {
@@ -20,6 +21,8 @@ typedef struct {
 
 void InitObject(Object *object);
 void DelObject(Object *object);
+
+Object CreateObject(Model model, BoundingBox boundingbox, Vector3 position, float scale);
 
 Two_Sides aabbCollision(Object *object1, Object *object2);
 

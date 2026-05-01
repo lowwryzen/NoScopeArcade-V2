@@ -1,5 +1,4 @@
-#include <math.h>
-#include "raylib.h"
+#include "vector.h"
 
 Vector3 _Vector3Normalize(Vector3 vector){
     Vector3 result = {0.0f, 0.0f, 0.0f};

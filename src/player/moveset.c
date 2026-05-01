@@ -1,13 +1,4 @@
-#include <math.h>
-
-#include "raylib.h"
-
-#include "vector.h"
-#include "world.h"
-#include "object.h"
-#include "entity.h"
 #include "moveset.h"
-#include "stdio.h"
 
 static float yaw = 0.0f;
 static float pitch = 0.0f;
@@ -30,23 +21,18 @@ void movesetMouse(Camera3D *mouse){
 
     switch (status){
 
-    case IN_SCREEN:
-        DisableCursor();
-        status = LOCK;
+    case IN_SCREEN: DisableCursor();
+                    status = LOCK;
+                    break;
 
-        break;
+    case OUT_SCREEN:EnableCursor();
+                    status = SUSPEND;
+                    break;
 
-    case OUT_SCREEN:
-        EnableCursor();
-        status = SUSPEND;
-        break;
+    case LOCK:      movesetCamera(mouse);
+                    break;
 
-    case LOCK:
-        movesetCamera(mouse);
-        break;
-
-    case SUSPEND:
-        break;
+    case SUSPEND:   break;
     }
 }
 
@@ -130,16 +116,12 @@ void UpdatePos(Camera3D *cam, Entity *player, Object *object){
             player->onGround = 1;
             player->pos.y = player->pos.y + (result.sides_2.max.y - result.sides_1.min.y) + 0.001f;
         }
+        
         player->pos = (Vector3){player->lastpos.x, player->pos.y, player->lastpos.z};
-
 
         player->body.position = player->pos;
         cam->position = player->pos;
-       //player->pos.z = player->lastpos.z;
     }
-
-    printf("player %f, B %f, obj %f\n", player->pos.y, aabbCollision(&player->body, object).sides_1.min.y, aabbCollision(&player->body, object).sides_2.max.y);
-    //printf("%i", player->onGround);
 
     EnableJump(player);
 }

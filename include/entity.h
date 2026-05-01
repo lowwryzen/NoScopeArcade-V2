@@ -17,4 +17,6 @@ typedef struct {
     
 } Entity;
 
+Entity CreateEntity(Object body, Vector3 pos, int HP, float vel, bool isAlive);
+Camera3D CreateCamera(Vector3 position, Vector3 target, Vector3 up);
 #endif

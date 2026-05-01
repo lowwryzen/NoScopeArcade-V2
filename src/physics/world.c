@@ -1,6 +1,4 @@
-#include "raylib.h"
-#include "object.h"
-#include "entity.h"
+#include "world.h"
 
 void EnableGravity(Entity *player, float gravity){
     static double accel = 0.0f;

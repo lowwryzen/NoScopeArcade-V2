@@ -1,6 +1,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <math.h>
 #include "raylib.h"
 
 Vector3 _Vector3Normalize(Vector3 vector);

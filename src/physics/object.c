@@ -1,7 +1,4 @@
-#include "raylib.h"
 #include "object.h"
-
-#include "math.h"
 
 void InitObject(Object *object){
     object->model.materials->maps[MATERIAL_MAP_DIFFUSE].texture = object->texture;
@@ -12,6 +9,18 @@ void InitObject(Object *object){
 void DelObject(Object *object){
     UnloadTexture(object->texture);
     UnloadModel(object->model);
+}
+
+Object CreateObject(Model model, BoundingBox boundingbox, Vector3 position, float scale){
+    Object object = {
+        .model = model,
+
+        .position = position,
+        .boundingbox = boundingbox,
+        .scale = scale,
+    };
+
+    return object;
 }
 
 Two_Sides aabbCollision(Object *object1, Object *object2){

@@ -1,7 +1,14 @@
 #ifndef MOVESET_H
 #define MOVESET_H
 
+#include <math.h>
+
 #include "raylib.h"
+
+#include "vector.h"
+#include "world.h"
+#include "object.h"
+#include "entity.h"
 
 #define toradians(x) (x * (PI/180.0f))
 

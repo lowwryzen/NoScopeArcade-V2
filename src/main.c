@@ -26,7 +26,7 @@ int main(){
         .position    =  cam.position,
         .scale       =  1.0f
     };
-    
+
     Object cube = {
         .model    =    LoadModel("./assets/models/cube3.obj"),
         .texture  =    LoadTexture("./assets/textures/texture.png"),
@@ -43,6 +43,7 @@ int main(){
         .scale    =     2.0f
     };
 
+
     Object ground = {
         .model    =     LoadModel("./assets/models/chao_xadrez.obj"),
         .texture  =     LoadTexture("./assets/textures/ground.jpg"),
@@ -51,38 +52,28 @@ int main(){
         .scale    =     1.0f
     };
 
-    Entity player = {
-        .body = player_body,
-        .pos  = cam.position,
-        .vel  = 0.1f,
-        .HP   = 100
-    };
+    Entity player = CreateEntity(player_body, cam.position, 100, 0.1f, 1);
 
     Object collidable_obj[] = {cube2, cube , ground};
 
     while(!WindowShouldClose()){
         player.lastpos = player.pos;
 
-        BeginDrawing();
-        
-        ClearBackground(WHITE);
-        
         movesetPlayer(&cam, &player);
-
-        //for (int i=0; i < sizeof(collidable_obj)/sizeof(Object); i++){
-        //    UpdatePos(&cam, &player, &collidable_obj[i]);
-        //}
-        player.onGround = 0;
-        UpdatePos(&cam, &player, &ground);
-        UpdatePos(&cam, &player, &cube2);
-        UpdatePos(&cam, &player, &cube);
-
         
-        EnableGravity(&player, GRAVITY);
-
-        //UpdatePos(&cam, &player, collidable_obj[1]);
+        player.onGround = 0;
+        for (int i=0; i < sizeof(collidable_obj)/sizeof(Object); i++){
+            UpdatePos(&cam, &player, &collidable_obj[i]);
+        }
 
         movesetMouse(&cam);
+        
+        EnableGravity(&player, GRAVITY);
+        
+
+        BeginDrawing();
+        
+            ClearBackground(WHITE);
         
             BeginMode3D(cam);
 

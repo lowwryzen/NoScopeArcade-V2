@@ -1,9 +1,15 @@
 CC      = gcc
-CFILES  = src/main.c src/moveset.c src/vector.c src/object.c src/world.c src/entity.c
-OUTPUT  = main.exe
+CFILES  := $(wildcard src/*/*.c)
+
+RAYLIB  = raylib
 INCLUDE = include
-LIB     = lib -lraylib -lwinmm -lgdi32 -luser32
+LIB     = raylib -lraylib -lwinmm -lgdi32 -luser32
+
+OUTPUT  = main.exe
 EXEC    = ./main
 
-init:
-	$(CC) $(CFILES) -o $(OUTPUT) -I $(INCLUDE) -L $(LIB) && main
+compile:
+	$(CC) src/main.c $(CFILES) -o $(OUTPUT) -I$(RAYLIB) -I$(INCLUDE) -L $(LIB)
+
+run:
+	./main
