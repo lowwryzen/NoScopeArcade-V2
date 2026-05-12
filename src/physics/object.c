@@ -71,7 +71,7 @@ bool CheckSideCollision(Object *object1, Object *object2){
 bool CheckGroundCollision(Object *object1, Object *object2){
     Two_Sides result = aabbCollision(object1, object2);
 
-    return (result.sides_1.min.y <= result.sides_2.max.y && result.sides_1.max.y >= result.sides_2.max.y + 0.001f);
+    return (result.sides_1.min.y <= result.sides_2.max.y && result.sides_1.max.y >= result.sides_2.max.y);
 }
 
 bool CheckPlayerCollision(Object *object1, Object *object2){
@@ -80,6 +80,6 @@ bool CheckPlayerCollision(Object *object1, Object *object2){
     return (
         result.sides_1.max.x >= result.sides_2.min.x && result.sides_1.min.x <= result.sides_2.max.x &&
         result.sides_1.max.y >= result.sides_2.min.y && result.sides_1.min.y <= result.sides_2.max.y + 0.001f &&
-        result.sides_1.max.z >= result.sides_2.min.z && result.sides_1.min.z <= result.sides_2.max.z
+        result.sides_1.max.z >= result.sides_2.min.z && result.sides_1.min.z <= result.sides_2.max.z 
     );
 }

@@ -1,5 +1,7 @@
 #include "moveset.h"
 
+extern float dx;
+
 static float yaw = 0.0f;
 static float pitch = 0.0f;
 
@@ -98,7 +100,7 @@ void UpdatePos(Camera3D *cam, Entity *player, Object *object){
     bool collision = CheckCollision(&player->body, object);
     Two_Sides result = aabbCollision(&player->body, object);
     
-    if (CheckPlayerCollision(&player->body, object) && result.sides_1.min.y == result.sides_2.max.y + 0.001f){
+    if (CheckPlayerCollision(&player->body, object)){
         player->onGround = 1;
         player->pos.y = player->pos.y + (result.sides_2.max.y - result.sides_1.min.y) + 0.001f;
 
@@ -112,18 +114,11 @@ void UpdatePos(Camera3D *cam, Entity *player, Object *object){
     }
 
     else {
-        if (CheckGroundCollision(&player->body, object)){
-            player->onGround = 1;
-            player->pos.y = player->pos.y + (result.sides_2.max.y - result.sides_1.min.y) + 0.001f;
-        }
-        
         player->pos = (Vector3){player->lastpos.x, player->pos.y, player->lastpos.z};
 
         player->body.position = player->pos;
         cam->position = player->pos;
     }
-
-    EnableJump(player);
 }
 
 void EnableJump(Entity *player){
@@ -131,11 +126,12 @@ void EnableJump(Entity *player){
 
     if (IsKeyPressed(KEY_SPACE) && player->onGround){
         player->onGround = 0;
-        accel = 0.15f;
+        accel = 1.0f;
+        player->velY = accel;
     }
 
-    if (!player->onGround)
-        player->pos.y += accel;
-        
+    if (!player->onGround){
+        player->pos.y += player->velY * dx;
+    }
     else accel = 0.0f;
 }

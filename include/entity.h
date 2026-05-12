@@ -11,6 +11,7 @@ typedef struct {
     
     int HP;
     float vel;
+    float velY;
 
     bool onGround;
     bool isAlive;

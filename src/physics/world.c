@@ -1,11 +1,17 @@
 #include "world.h"
 
+extern float dx;
+
 void EnableGravity(Entity *player, float gravity){
-    static double accel = 0.0f;
+    static double accel = 0.0;
 
     if (!player->onGround){
-        player->pos.y+= gravity * accel;
-        accel+=0.001;
+        player->velY+= accel * dx;
+        player->pos.y+= player->velY * dx;
+        accel+= gravity * dx;
     }
-    else accel = 0.0f;
+    else {
+        player->velY = 0.0f;
+        accel = 0.0f;
+    }
 }

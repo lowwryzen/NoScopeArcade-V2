@@ -14,10 +14,12 @@ Camera3D cam = {
     .up=         (Vector3){0.0f,1.0f,0.0f},
     .projection= CAMERA_PERSPECTIVE,
 };
+float dx;
 
 int main(){
     InitWindow(1280,720,"No Scope ArcadeV2");
     SetTargetFPS(60);
+    
 
     Object player_body = {
         .model       =  LoadModel("./assets/models/cube.obj"),
@@ -57,19 +59,20 @@ int main(){
     Object collidable_obj[] = {cube2, cube , ground};
 
     while(!WindowShouldClose()){
+        dx = GetFrameTime();
         player.lastpos = player.pos;
 
         movesetPlayer(&cam, &player);
+        
+        EnableJump(&player);
+        EnableGravity(&player, GRAVITY);
         
         player.onGround = 0;
         for (int i=0; i < sizeof(collidable_obj)/sizeof(Object); i++){
             UpdatePos(&cam, &player, &collidable_obj[i]);
         }
-
-        movesetMouse(&cam);
         
-        EnableGravity(&player, GRAVITY);
-        
+        movesetMouse(&cam); 
 
         BeginDrawing();
         

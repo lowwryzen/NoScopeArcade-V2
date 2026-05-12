@@ -13,3 +13,5 @@ compile:
 
 run:
 	./main
+
+all: compile run
