@@ -19,8 +19,13 @@ typedef enum{
     LOCK       = 4
 } Screen_Status;
 
-void movesetMouse(Camera3D *mouse);
-void movesetCamera(Camera3D *camera);
+typedef struct {
+    Screen_Status screen_status;
+    float sensi;
+} Mouse;
+
+void movesetMouse(Camera3D *camera, Mouse *mouse);
+void movesetCamera(Camera3D *camera, float sensi);
 void movesetPlayer(Camera3D *camera, Entity *player);
 
 void UpdatePos(Camera3D *cam, Entity *player, Object *object);

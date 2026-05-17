@@ -14,7 +14,7 @@ Entity CreateEntity(Object body, Vector3 pos, int HP, float vel, bool isAlive){
 
 Camera3D CreateCamera(Vector3 position, Vector3 target, Vector3 up){
     Camera3D cam = {
-        .fovy=45.0f,
+        .fovy=       45.0f,
         .position=   position,
         .target=     target,
         .up=         up,

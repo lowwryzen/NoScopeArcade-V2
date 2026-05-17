@@ -4,8 +4,15 @@
 #include "object.h"
 #include "entity.h"
 #include "moveset.h"
+#include "gui.h"
 
 bool collision = 0;
+bool pause = 0;
+float dx;
+
+Mouse mouse = {
+    .sensi = 0.1f
+};
 
 Camera3D cam = {
     .fovy=45.0f,
@@ -14,12 +21,12 @@ Camera3D cam = {
     .up=         (Vector3){0.0f,1.0f,0.0f},
     .projection= CAMERA_PERSPECTIVE,
 };
-float dx;
 
 int main(){
     InitWindow(1280,720,"No Scope ArcadeV2");
     SetTargetFPS(60);
     
+    SetExitKey(KEY_NULL);
 
     Object player_body = {
         .model       =  LoadModel("./assets/models/cube.obj"),
@@ -58,54 +65,79 @@ int main(){
 
     Object collidable_obj[] = {cube2, cube , ground};
 
+    Button continue_button = CreateButton((Vector2){40, 330}, (Vector2){120, 30}, (Color){0, 0, 0, 0});
+    Button exit_button = CreateButton((Vector2){40, 430}, (Vector2){120, 30}, (Color){0, 0, 0, 0});
+
     while(!WindowShouldClose()){
+        ClearBackground(WHITE);
+
         dx = GetFrameTime();
-        player.lastpos = player.pos;
+        
+        if (!pause){
+            player.lastpos = player.pos;
 
-        movesetPlayer(&cam, &player);
-        
-        EnableJump(&player);
-        EnableGravity(&player, GRAVITY);
-        
-        player.onGround = 0;
-        for (int i=0; i < sizeof(collidable_obj)/sizeof(Object); i++){
-            UpdatePos(&cam, &player, &collidable_obj[i]);
+            movesetPlayer(&cam, &player);
+            
+            EnableJump(&player);
+            EnableGravity(&player, GRAVITY);
+            
+            player.onGround = 0;
+            for (int i=0; i < sizeof(collidable_obj)/sizeof(Object); i++){
+                UpdatePos(&cam, &player, &collidable_obj[i]);
+            }
         }
+        movesetMouse(&cam, &mouse);
         
-        movesetMouse(&cam); 
-
         BeginDrawing();
-        
-            ClearBackground(WHITE);
-        
+            
             BeginMode3D(cam);
+            
+            InitObject(&cube);
+            InitObject(&cube2);
+            InitObject(&ground);
+        
+        EndMode3D();
 
-                InitObject(&cube);
-                InitObject(&cube2);
-                InitObject(&ground);
-                
-            EndMode3D();
+        if (pause){
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), (Color){80, 80, 80, 90});
 
-            DrawText(TextFormat("x pos: %0.2f", cam.position.x), 0,0,30,BLACK);
-            DrawText(TextFormat("y pos: %0.2f", cam.position.y), 0,30,30,BLACK);
-            DrawText(TextFormat("z pos: %0.2f", cam.position.z), 0,60,30,BLACK);
+            DrawText("NoScopeArcadeV2", 30, 130, 40, BLACK);
 
-            DrawText(TextFormat("x pos p: %0.2f", player.pos.x), 200,0,30,BLACK);
-            DrawText(TextFormat("y pos p: %0.2f", player.pos.y), 200,30,30,BLACK);
-            DrawText(TextFormat("z pos p: %0.2f", player.pos.z), 200,60,30,BLACK);
+            DrawButton(&continue_button);
+            ActivateButton(&continue_button);
+            DrawButtonText(&continue_button, "Continue", 25, WHITE);
+            if (continue_button.isActive){
+                mouse.screen_status = IN_SCREEN;
+                pause = 0;
+            }
 
-            DrawText(TextFormat("x pos b: %0.2f", player.body.position.x), 400,0,30,BLACK);
-            DrawText(TextFormat("y pos b: %0.2f", player.body.position.y), 400,30,30,BLACK);
-            DrawText(TextFormat("z pos b: %0.2f", player.body.position.z), 440,60,30,BLACK);
+            DrawButton(&exit_button);
+            ActivateButton(&exit_button);
+            DrawButtonText(&exit_button, "Exit Game", 25, WHITE);
+            if (exit_button.isActive){
+                goto end;
+            }
+        }
+        DrawText(TextFormat("x pos: %0.2f", cam.position.x), 0,0,30,BLACK);
+        DrawText(TextFormat("y pos: %0.2f", cam.position.y), 0,30,30,BLACK);
+        DrawText(TextFormat("z pos: %0.2f", cam.position.z), 0,60,30,BLACK);
+        
+        DrawText(TextFormat("x pos p: %0.2f", player.pos.x), 200,0,30,BLACK);
+        DrawText(TextFormat("y pos p: %0.2f", player.pos.y), 200,30,30,BLACK);
+        DrawText(TextFormat("z pos p: %0.2f", player.pos.z), 200,60,30,BLACK);
+        
+        DrawText(TextFormat("x pos b: %0.2f", player.body.position.x), 400,0,30,BLACK);
+        DrawText(TextFormat("y pos b: %0.2f", player.body.position.y), 400,30,30,BLACK);
+        DrawText(TextFormat("z pos b: %0.2f", player.body.position.z), 440,60,30,BLACK);
         
         EndDrawing();
     }
-    
-    DelObject(&cube);
-    DelObject(&cube2);
-    DelObject(&ground);
+    end:
+        DelObject(&cube);
+        DelObject(&cube2);
+        DelObject(&ground);
 
-    CloseWindow();
+        CloseWindow();
 
     return 0;
 }

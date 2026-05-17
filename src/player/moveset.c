@@ -1,51 +1,50 @@
 #include "moveset.h"
 
 extern float dx;
+extern bool pause;
 
 static float yaw = 0.0f;
 static float pitch = 0.0f;
-
-static float sensi = 0.1f; // Temp var
-
 static Vector3 dislocation = {0};
 
-void movesetMouse(Camera3D *mouse){
+void movesetMouse(Camera3D *camera, Mouse *mouse){
     static unsigned char status = SUSPEND;
 
-    if (IsKeyPressed(KEY_TAB)){
-        if (status == LOCK){
-            status = OUT_SCREEN;
+    if (IsKeyPressed(KEY_ESCAPE)){
+        if (mouse->screen_status == LOCK){
+            mouse->screen_status = OUT_SCREEN;
+            pause = 1;
         }
-        else if (status == SUSPEND){
-            status = IN_SCREEN;
+        else if (mouse->screen_status == SUSPEND){
+            mouse->screen_status = IN_SCREEN;
+            pause = 0;
         }
     }
 
-    switch (status){
+    switch (mouse->screen_status){
+        case IN_SCREEN: DisableCursor();
+                        mouse->screen_status = LOCK;
+                        break;
 
-    case IN_SCREEN: DisableCursor();
-                    status = LOCK;
-                    break;
+        case OUT_SCREEN:EnableCursor();
+                        mouse->screen_status = SUSPEND;
+                        break;
 
-    case OUT_SCREEN:EnableCursor();
-                    status = SUSPEND;
-                    break;
+        case LOCK:      movesetCamera(camera, mouse->sensi);
+                        break;
 
-    case LOCK:      movesetCamera(mouse);
-                    break;
-
-    case SUSPEND:   break;
+        case SUSPEND:   break;
     }
 }
 
-void movesetCamera(Camera3D *camera){
+void movesetCamera(Camera3D *camera, float sensi){
     Vector2 mouse_delta = GetMouseDelta();
     
     yaw += mouse_delta.x * sensi;
     pitch -= mouse_delta.y * sensi;
     
-    if (pitch > 89.0f){pitch = 89.0f;}
-    if (pitch < -89.0f){pitch = -89.0f;}
+    if (pitch > 89.0f)  pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
     
     dislocation.x = cos(toradians(yaw)) * cos(toradians(pitch));
     dislocation.y = sin(toradians(pitch));
@@ -113,12 +112,6 @@ void UpdatePos(Camera3D *cam, Entity *player, Object *object){
         cam->position = player->pos;
     }
 
-    else {
-        player->pos = (Vector3){player->lastpos.x, player->pos.y, player->lastpos.z};
-
-        player->body.position = player->pos;
-        cam->position = player->pos;
-    }
 }
 
 void EnableJump(Entity *player){
@@ -130,8 +123,8 @@ void EnableJump(Entity *player){
         player->velY = accel;
     }
 
-    if (!player->onGround){
+    if (!player->onGround)
         player->pos.y += player->velY * dx;
-    }
+    
     else accel = 0.0f;
 }
