@@ -3,8 +3,6 @@
 extern float dx;
 extern bool pause;
 
-static float yaw = 0.0f;
-static float pitch = 0.0f;
 static Vector3 dislocation = {0};
 
 void movesetMouse(Camera3D *camera, Mouse *mouse){
@@ -30,25 +28,25 @@ void movesetMouse(Camera3D *camera, Mouse *mouse){
                         mouse->screen_status = SUSPEND;
                         break;
 
-        case LOCK:      movesetCamera(camera, mouse->sensi);
+        case LOCK:      movesetCamera(camera, mouse);
                         break;
 
         case SUSPEND:   break;
     }
 }
 
-void movesetCamera(Camera3D *camera, float sensi){
+void movesetCamera(Camera3D *camera, Mouse *mouse){
     Vector2 mouse_delta = GetMouseDelta();
     
-    yaw += mouse_delta.x * sensi;
-    pitch -= mouse_delta.y * sensi;
+    mouse->yaw += mouse_delta.x * mouse->sensi;
+    mouse->pitch -= mouse_delta.y * mouse->sensi;
     
-    if (pitch > 89.0f)  pitch = 89.0f;
-    if (pitch < -89.0f) pitch = -89.0f;
+    if (mouse->pitch > 89.0f)  mouse->pitch = 89.0f;
+    if (mouse->pitch < -89.0f) mouse->pitch = -89.0f;
     
-    dislocation.x = cos(toradians(yaw)) * cos(toradians(pitch));
-    dislocation.y = sin(toradians(pitch));
-    dislocation.z = sin(toradians(yaw)) * cos(toradians(pitch));
+    dislocation.x = cos(toradians(mouse->yaw)) * cos(toradians(mouse->pitch));
+    dislocation.y = sin(toradians(mouse->pitch));
+    dislocation.z = sin(toradians(mouse->yaw)) * cos(toradians(mouse->pitch));
     
     camera->target = Vector3Sum(camera->position, _Vector3Normalize(dislocation));
     

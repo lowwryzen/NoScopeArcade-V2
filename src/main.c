@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 
 #include "world.h"
 #include "object.h"
@@ -7,7 +8,7 @@
 #include "gui.h"
 
 bool collision = 0;
-bool pause = 0;
+bool pause = 1;
 float dx;
 
 Mouse mouse = {
@@ -61,7 +62,16 @@ int main(){
         .scale    =     1.0f
     };
 
+    Object sniper_model = {
+        .model = LoadModel("./assets/models/sniper.glb"),
+        .texture = LoadTexture("./assets/textures/texture.png"),
+
+        .boundingbox = GetModelBoundingBox(sniper_model.model),
+        .scale = 0.1f
+    };
+
     Entity player = CreateEntity(player_body, cam.position, 100, 0.1f, 1);
+    Gun sniper = {.model = sniper_model, .ammo = 25, .equiped = 1};
 
     Object collidable_obj[] = {cube2, cube , ground};
 
@@ -85,16 +95,30 @@ int main(){
             for (int i=0; i < sizeof(collidable_obj)/sizeof(Object); i++){
                 UpdatePos(&cam, &player, &collidable_obj[i]);
             }
+            
+            
         }
         movesetMouse(&cam, &mouse);
         
+        Vector3 diff = {0.25f*(cam.target.x - cam.position.x), -0.1f, 0.25f*(cam.target.z - cam.position.z)};
+        Vector3 gun_pos = Vector3Sum(cam.position, diff);
+        sniper_model.position = Vector3Sum(gun_pos, Vector3RotateByAxisAngle((Vector3){0.25f*(gun_pos.x - cam.position.x), 0.1f*(cam.target.y - gun_pos.y), 0.25f*(gun_pos.z - cam.position.z)}, (Vector3){0, 0.1f, 0}, toradians(-90)));
+        Matrix cammatrix = MatrixInvert(GetCameraMatrix(cam));
+        
+        cammatrix.m12 = 0.0f;
+        cammatrix.m13 = 0.0f;
+        cammatrix.m14 = 0.0f;
+        
+        sniper_model.model.transform = cammatrix;
+
         BeginDrawing();
-            
             BeginMode3D(cam);
             
             InitObject(&cube);
             InitObject(&cube2);
             InitObject(&ground);
+
+            InitObject(&sniper_model);
         
         EndMode3D();
 
@@ -137,6 +161,7 @@ int main(){
         DelObject(&cube2);
         DelObject(&ground);
 
+        DelObject(&sniper.model);
         CloseWindow();
 
     return 0;

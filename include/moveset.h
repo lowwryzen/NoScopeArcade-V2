@@ -22,10 +22,13 @@ typedef enum{
 typedef struct {
     Screen_Status screen_status;
     float sensi;
+
+    float yaw;
+    float pitch;
 } Mouse;
 
 void movesetMouse(Camera3D *camera, Mouse *mouse);
-void movesetCamera(Camera3D *camera, float sensi);
+void movesetCamera(Camera3D *camera, Mouse *mouse);
 void movesetPlayer(Camera3D *camera, Entity *player);
 
 void UpdatePos(Camera3D *cam, Entity *player, Object *object);

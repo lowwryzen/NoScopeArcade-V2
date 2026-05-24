@@ -3,9 +3,12 @@
 
 #include "raylib.h"
 #include "object.h"
+#include "gun.h"
 
 typedef struct {
     Object body;
+    Gun gun;
+
     Vector3 pos;
     Vector3 lastpos;
     
